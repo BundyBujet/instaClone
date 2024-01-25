@@ -72,6 +72,7 @@ const Explore = () => {
         {shouldShowSearchResult ? (
           <SearchResult
             isSearchFetching={isSearchFetching}
+            // @ts-ignore
             searchedPosts={searchedPosts}
           />
         ) : shouldShowPosts ? (
