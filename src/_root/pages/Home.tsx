@@ -49,7 +49,7 @@ const Home = () => {
               ))}
             </ul>
           )}
-          {!isPostLoading && (
+          {hasNextPage && (
             <div ref={ref} className="mt-10">
               <Loader />
             </div>
