@@ -162,7 +162,7 @@ export const useDeletePost = () => {
       deletePost(postId, imageId),
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+        queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
       }),
   });
 };
