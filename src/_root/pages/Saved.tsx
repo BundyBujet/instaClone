@@ -19,7 +19,6 @@ const Saved = () => {
       </div>
     );
   }
-  console.log(posts);
 
   return (
     <div className="explore-container">
