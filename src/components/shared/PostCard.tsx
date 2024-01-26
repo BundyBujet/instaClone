@@ -10,7 +10,6 @@ type PostCardProps = {
 
 const PostCard = ({ post }: PostCardProps) => {
   const { user } = useUserContext();
-  console.log(post)
   if (!post.creator) return;
 
   return (
@@ -32,7 +31,7 @@ const PostCard = ({ post }: PostCardProps) => {
               {post.creator.name}
             </p>
               <span className="subtle-semibold lg:small-regular text-light-3 ">@{post.creator.username}</span>
-            
+
           </div>
         </div>
         <Link

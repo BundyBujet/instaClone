@@ -11,6 +11,7 @@ import {
   deleteSavedPost,
   getCurrentUser,
   getInfinitePost,
+  getInfiniteSavedPost,
   getPostById,
   getRecentPosts,
   likePost,
@@ -189,5 +190,21 @@ export const useSearchPosts = (searchTerm: string) => {
     queryFn: () => searchPost(searchTerm),
     // refetch when search term change
     enabled: !!searchTerm,
+  });
+};
+
+export const useGetSavedPosts = () => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_SAVED_POSTS],
+    queryFn: getInfiniteSavedPost,
+    // @ts-ignore
+    getNextPageParam: (lastPage) => {
+      if (lastPage && lastPage.documents.length === 0) {
+        return null;
+      }
+      const lastId = lastPage?.documents[lastPage?.documents.length - 1].$id;
+
+      return lastId;
+    },
   });
 };
