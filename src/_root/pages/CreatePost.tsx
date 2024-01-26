@@ -10,6 +10,7 @@ const CreatePost = () => {
             alt="add post"
             width={36}
             height={36}
+            className="contain-cover"
           />
           <h2 className="h3-bold md:h2-bold text-left w-full">Create post</h2>
         </div>

@@ -10,7 +10,7 @@ type PostCardProps = {
 
 const PostCard = ({ post }: PostCardProps) => {
   const { user } = useUserContext();
-
+  console.log(post)
   if (!post.creator) return;
 
   return (
@@ -31,15 +31,8 @@ const PostCard = ({ post }: PostCardProps) => {
             <p className="base-medium lg:body-bold text-light-1">
               {post.creator.name}
             </p>
-            <div className="flex-center gap-2 text-light-3">
-              <p className="subtle-semibold lg:small-regular">
-                {multiFormatDateString(post.$createdAt)}
-              </p>
-              -
-              <p className="subtle-semibold lg:small-regular">
-                {post.location}
-              </p>
-            </div>
+              <span className="subtle-semibold lg:small-regular text-light-3 ">@{post.creator.username}</span>
+            
           </div>
         </div>
         <Link
@@ -71,6 +64,16 @@ const PostCard = ({ post }: PostCardProps) => {
           className="post-card_img"
         />
       </Link>
+      <div className="flex gap-2 items-center  text-light-3 mb-4">
+              <p className="subtle-semibold lg:small-regular">
+                {multiFormatDateString(post.$createdAt)}
+              </p>
+              -
+              <p className="subtle-semibold lg:small-regular">
+                {post.location}
+              </p>
+            </div>
+            <hr className="border w-full border-dark-4/80 mb-4" />
       <PostStats post={post} userId={user.id} />
     </div>
   );
