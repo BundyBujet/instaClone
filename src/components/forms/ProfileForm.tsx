@@ -13,78 +13,71 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "../ui/textarea";
 import FileUploader from "../shared/FileUploader";
-import { PostValidation } from "@/lib/validation";
+import { ProfileValidation } from "@/lib/validation";
 import { Models } from "appwrite";
 import {
   useCreatePost,
   useUpdatePost,
+  useUpdateUser,
 } from "@/lib/react-query/queriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
 import { useToast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import Loader from "../shared/Loader";
+import { updateUser } from "@/lib/appwrite/api";
 
 type PostFormProps = {
   post?: Models.Document;
   action: "Create" | "Update";
 };
 
-const PostForm = ({ post, action }: PostFormProps) => {
+const ProfileForm = ({ post, action }: PostFormProps) => {
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
     useCreatePost();
-  const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
-    useUpdatePost();
+
+  const { mutateAsync: IUpdatePost, isPending: isLoadingUpdate } =
+    useUpdateUser();
   const { user } = useUserContext();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const form = useForm<z.infer<typeof PostValidation>>({
-    resolver: zodResolver(PostValidation),
+  const form = useForm<z.infer<typeof ProfileValidation>>({
+    resolver: zodResolver(ProfileValidation),
     defaultValues: {
-      caption: post ? post?.caption : "",
+      name: "",
+      username: "",
       file: [],
-      location: post ? post?.location : "",
-      tags: post ? post.tags.join(",") : "",
+      email: "",
+      bio: "",
     },
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof PostValidation>) {
-    if (post && action === "Update") {
+  async function onSubmit(values: z.infer<typeof ProfileValidation>) {
+    if (action === "Update") {
       // @ts-ignore
-      const updatedPost = await updatePost({
+      const updatedUser = await updateUser({
         ...values,
-        postId: post.$id,
-        imageId: post?.imageId,
-        imageUrl: post?.imageUrl,
+        name: user.name || values.name,
+        username: user.username || values.username,
+        email: user.email || values.email,
+        userId: user.id,
+        imageId: user?.imageId,
+        imageUrl: user?.imageUrl,
+        bio: user.bio || values.bio,
       });
-
-      if (!updatedPost) {
+      if (!updatedUser) {
         toast({
           title: "Please try again.",
         });
       }
-
-      return navigate(`/posts/${post.$id}`);
+      return navigate("/");
     }
-    // @ts-ignore
-    const newPost = await createPost({
-      ...values,
-      userId: user.id,
-    });
-
-    if (!newPost) {
-      toast({
-        title: "Please try again.",
-      });
-    }
-
-    navigate("/");
   }
 
-  const handlePreviousRoute = () => {
-    return navigate(-1);
-  };
+  // const handlePreviousRoute = () => {
+  //   return navigate(-1);
+  // };
 
   return (
     <Form {...form}>
@@ -94,32 +87,15 @@ const PostForm = ({ post, action }: PostFormProps) => {
       >
         <FormField
           control={form.control}
-          name="caption"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="shad-form_label">Caption</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="shadcn"
-                  {...field}
-                  className="shad-textarea custom-scrollbar"
-                />
-              </FormControl>
-              <FormMessage className="shad-form_message" />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="file"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Add photo</FormLabel>
+              <FormLabel className="shad-form_label"></FormLabel>
               <FormControl>
                 <FileUploader
                   fieldChange={field.onChange}
-                  mediaUrl={post?.imageUrl}
-                  profile={false}
+                  mediaUrl={user?.imageUrl}
+                  profile={true}
                 />
               </FormControl>
               <FormMessage className="shad-form_message" />
@@ -128,12 +104,18 @@ const PostForm = ({ post, action }: PostFormProps) => {
         />
         <FormField
           control={form.control}
-          name="location"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Add location</FormLabel>
+              <FormLabel className="shad-form_label">Name</FormLabel>
               <FormControl>
-                <Input type="text" className="shad-input" {...field} />
+                <Input
+                  type="text"
+                  placeholder="Name"
+                  {...field}
+                  className="shad-input"
+                  value={user.name}
+                />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
@@ -141,18 +123,55 @@ const PostForm = ({ post, action }: PostFormProps) => {
         />
         <FormField
           control={form.control}
-          name="tags"
+          name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">
-                Add tags (separated by comma " , ")
-              </FormLabel>
+              <FormLabel className="shad-form_label">Username</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Username"
+                  {...field}
+                  className="shad-input"
+                  type="text"
+                  value={user.username}
+                />
+              </FormControl>
+              <FormMessage className="shad-form_message" />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="shad-form_label">Email</FormLabel>
               <FormControl>
                 <Input
                   type="text"
                   className="shad-input"
-                  placeholder="art, cat, love"
                   {...field}
+                  placeholder="example@gmail.com"
+                  value={user.email}
+                />
+              </FormControl>
+              <FormMessage className="shad-form_message" />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="bio"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="shad-form_label">Bio</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Tell us about your self"
+                  {...field}
+                  className="shad-textarea custom-scrollbar"
+                  value={user.bio}
                 />
               </FormControl>
               <FormMessage className="shad-form_message" />
@@ -161,19 +180,12 @@ const PostForm = ({ post, action }: PostFormProps) => {
         />
         <div className="flex gap-4 items-center justify-end">
           <Button
-            type="button"
-            className="shad-button_dark_4 "
-            onClick={handlePreviousRoute}
-          >
-            Cancel
-          </Button>
-          <Button
             type="submit"
             className="shad-button_primary whitespace-nowrap"
             disabled={isLoadingCreate || isLoadingUpdate}
           >
             {isLoadingCreate || (isLoadingUpdate && <Loader />)}
-            {action} post
+            Update Profile
           </Button>
         </div>
       </form>
@@ -181,4 +193,4 @@ const PostForm = ({ post, action }: PostFormProps) => {
   );
 };
 
-export default PostForm;
+export default ProfileForm;
