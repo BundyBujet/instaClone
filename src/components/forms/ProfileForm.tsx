@@ -25,6 +25,7 @@ import { useToast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import Loader from "../shared/Loader";
 import { updateUser } from "@/lib/appwrite/api";
+import { useState } from "react";
 
 type PostFormProps = {
   post?: Models.Document;
@@ -32,9 +33,14 @@ type PostFormProps = {
 };
 
 const ProfileForm = ({ post, action }: PostFormProps) => {
+  const { user } = useUserContext();
+  const [name, setName] = useState(user.name || "");
+  const [username, setUsername] = useState(user.username || "");
+  const [email, setEmail] = useState(user.email || "");
+  const [bio, setBio] = useState(user.bio || "");
+
   const { mutateAsync: IUpdatUser, isPending: isLoadingUpdate } =
     useUpdateUser();
-  const { user } = useUserContext();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -55,13 +61,13 @@ const ProfileForm = ({ post, action }: PostFormProps) => {
       // @ts-ignore
       const updatedUser = await IUpdatUser({
         ...values,
-        name: user.name || values.name,
-        username: user.username || values.username,
-        email: user.email || values.email,
+        name: user.name || name,
+        username: user.username || username,
+        email: user.email || email,
         userId: user.id,
         imageId: user?.imageId,
         imageUrl: user?.imageUrl,
-        bio: user.bio || values.bio,
+        bio: user.bio || bio,
       });
       if (!updatedUser) {
         toast({
@@ -111,7 +117,8 @@ const ProfileForm = ({ post, action }: PostFormProps) => {
                   placeholder="Name"
                   {...field}
                   className="shad-input"
-                  value={user.name}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </FormControl>
               <FormMessage className="shad-form_message" />
@@ -130,7 +137,8 @@ const ProfileForm = ({ post, action }: PostFormProps) => {
                   {...field}
                   className="shad-input"
                   type="text"
-                  value={user.username}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </FormControl>
               <FormMessage className="shad-form_message" />
@@ -150,7 +158,8 @@ const ProfileForm = ({ post, action }: PostFormProps) => {
                   className="shad-input"
                   {...field}
                   placeholder="example@gmail.com"
-                  value={user.email}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </FormControl>
               <FormMessage className="shad-form_message" />
@@ -168,7 +177,8 @@ const ProfileForm = ({ post, action }: PostFormProps) => {
                   placeholder="Tell us about your self"
                   {...field}
                   className="shad-textarea custom-scrollbar"
-                  value={user.bio}
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
                 />
               </FormControl>
               <FormMessage className="shad-form_message" />
