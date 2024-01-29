@@ -20,7 +20,7 @@ const UpdateProfile = () => {
           />
           <h2 className="h3-bold md:h2-bold text-left w-full">Edit profile</h2>
         </div>
-        {user.id === id ? <ProfileForm action="Update" /> : <Profile />}
+        <ProfileForm action="Update" />
       </div>
     </div>
   );

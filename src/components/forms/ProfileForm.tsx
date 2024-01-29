@@ -32,10 +32,7 @@ type PostFormProps = {
 };
 
 const ProfileForm = ({ post, action }: PostFormProps) => {
-  const { mutateAsync: createPost, isPending: isLoadingCreate } =
-    useCreatePost();
-
-  const { mutateAsync: IUpdatePost, isPending: isLoadingUpdate } =
+  const { mutateAsync: IUpdatUser, isPending: isLoadingUpdate } =
     useUpdateUser();
   const { user } = useUserContext();
   const { toast } = useToast();
@@ -56,7 +53,7 @@ const ProfileForm = ({ post, action }: PostFormProps) => {
   async function onSubmit(values: z.infer<typeof ProfileValidation>) {
     if (action === "Update") {
       // @ts-ignore
-      const updatedUser = await updateUser({
+      const updatedUser = await IUpdatUser({
         ...values,
         name: user.name || values.name,
         username: user.username || values.username,
@@ -182,9 +179,9 @@ const ProfileForm = ({ post, action }: PostFormProps) => {
           <Button
             type="submit"
             className="shad-button_primary whitespace-nowrap"
-            disabled={isLoadingCreate || isLoadingUpdate}
+            disabled={isLoadingUpdate}
           >
-            {isLoadingCreate || (isLoadingUpdate && <Loader />)}
+            {isLoadingUpdate && <Loader />}
             Update Profile
           </Button>
         </div>
