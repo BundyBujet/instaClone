@@ -61,13 +61,13 @@ const ProfileForm = ({ post, action }: PostFormProps) => {
       // @ts-ignore
       const updatedUser = await IUpdatUser({
         ...values,
-        name: user.name || name,
-        username: user.username || username,
-        email: user.email || email,
+        name:  name,
+        username:  username,
+        email:  email,
         userId: user.id,
         imageId: user?.imageId,
         imageUrl: user?.imageUrl,
-        bio: user.bio || bio,
+        bio: bio,
       });
       if (!updatedUser) {
         toast({
