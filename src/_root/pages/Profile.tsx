@@ -2,14 +2,16 @@ import Loader from "@/components/shared/Loader";
 import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/context/AuthContext";
 import { useGetUserById } from "@/lib/react-query/queriesAndMutations";
+import { Separator } from "@/components/ui/separator";
+
 import { Link, useParams } from "react-router-dom";
+import PostCard from "@/components/shared/PostCard";
+import GridPostList from "@/components/shared/GridPostList";
 
 const Profile = () => {
   const { id } = useParams();
   const { user } = useUserContext();
   const { data: userProfile } = useGetUserById(id);
-  console.log(id);
-  console.log(user.id);
 
   return (
     <div className="flex flex-1">
@@ -41,6 +43,10 @@ const Profile = () => {
             ) : (
               ""
             )}
+          </div>
+          <Separator className="bg-light-3 w-full lg:w-9/12" />
+          <div className="flex flex-wrap gap-9 w-full max-w-5xl">
+            <GridPostList posts={userProfile.posts} showUser={false} />
           </div>
         </div>
       )}
